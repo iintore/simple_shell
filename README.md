@@ -1,4 +1,4 @@
-# Simple Shell
+# 0x16. C - Simple Shell
 
 ## Description
 This is a simple shell program written in the C programming language. It is a basic Unix shell that can execute shell commands and provide a command-line interface.
