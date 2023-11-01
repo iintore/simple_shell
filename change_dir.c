@@ -17,7 +17,7 @@ void cd_and_dot(data_shell *data)
 	set_env("OLDPWD", cp_pwd, data);
 	dir = datash->args[1];
 	if (_strcmp(".", dir) == 0)
-	{
+	
 		set_env("PWD", cp_pwd, data);
 		free(cp_pwd);
 		return;
