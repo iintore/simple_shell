@@ -31,7 +31,7 @@ int main(void)
 			break;  /* Exit on Ctrl+D (EOF) */
 		}
 		input[strcspn(input, "\n")] = '\0';
-		pid_t pid = fork();		
+		pid_t pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
@@ -42,7 +42,6 @@ int main(void)
 			/* Child process */
 			argc = 0;
 			arguments[argc] = strtok(input, " ");
-
 			while (arguments[argc] != NULL)
 			{
 				argc++;
