@@ -95,5 +95,5 @@ int main(void)
 			wait(&status);  /* Wait for child process to complete */
 		}
 	}
-	return 0;  /* Return 0 on success */
+	return (0);  /* Return 0 on success */
 }
