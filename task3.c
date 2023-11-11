@@ -8,6 +8,8 @@
 #define MAX_INPUT_LENGTH 100
 #define MAX_ARGUMENTS 20
 
+void executeCommand(char *input);
+
 /**
  * main - Simple Shell 0.3
  *
@@ -19,80 +21,86 @@
  */
 int main(void)
 {
-    char input[MAX_INPUT_LENGTH];     /* Stores user input */
-    char *arguments[MAX_ARGUMENTS];   /* Stores command and arguments */
-    int argc;                         /* Argument count */
+	char input[MAX_INPUT_LENGTH];
 
-    while (1)
-    {
-        printf(":) ");    /* Display shell prompt */
-        fgets(input, sizeof(input), stdin);  /* Read user input */
+	while (1)
+	{
+		printf(":) ");
+		fgets(input, sizeof(input), stdin);
+		if (feof(stdin))
+		{
+			break;
+		}
+		input[strcspn(input, "\n")] = '\0';
+		executeCommand(input);
+	}
+	return (0);
+}
+/**
+ * executeCommand - Execute the particular command
+ * @input: The command to be executed
+ *
+ * Description:
+ * This function takes a command as input, checks if it exists in the PATH,
+ * and then forks a process to execute the command.
+ */
+void executeCommand(char *input)
+{
+	char *arguments[MAX_ARGUMENTS];
+	int argc = 0;
+	char *path = getenv("PATH");
+	char *command = strtok(input, " ");
 
-        if (feof(stdin))
-        {
-            break;  /* Exit on Ctrl+D (EOF) */
-        }
+	if (access(command, X_OK) == 0)
+	{
+		strcpy(input, command);
+	}
+	else if (path != NULL)
+	{
+		char *path_token = strtok(path, ":");
 
-        /* Remove the newline character from the input */
-        input[strcspn(input, "\n")] = '\0';
+		while (path_token != NULL)
+		{
+			char cmd_path[MAX_INPUT_LENGTH];
 
-        // Check if the command exists in PATH
-        char *path = getenv("PATH");
-        char *command = strtok(input, " ");
+			snprintf(cmd_path, sizeof(cmd_path), "%s/%s", path_token, command);
 
-        if (access(command, X_OK) == 0)
-        {
-            strcpy(input, command);
-        }
-        else if (path != NULL)
-        {
-            char *path_token = strtok(path, ":");
-            while (path_token != NULL)
-            {
-                char cmd_path[MAX_INPUT_LENGTH];
-                snprintf(cmd_path, sizeof(cmd_path), "%s/%s", path_token, command);
-                if (access(cmd_path, X_OK) == 0)
-                {
-                    strcpy(input, cmd_path);
-                    break;
-                }
-                path_token = strtok(NULL, ":");
-            }
-        }
+			if (access(cmd_path, X_OK) == 0)
+			{
+				strcpy(input, cmd_path);
+				break;
+			}
+			path_token = strtok(NULL, ":");
 
-        pid_t pid = fork();  /* Create a child process */
+		}
+	}
+	pid_t pid = fork();
 
-        if (pid == -1)
-        {
-            perror("Error: Unable to create a child process.");
-            exit(EXIT_FAILURE);
-        }
-        else if (pid == 0)
-        {
-            /* Child process */
-            argc = 0;
-            arguments[argc] = strtok(input, " ");  /* Split input into tokens */
+	if (pid == -1)
+	{
+		perror("Error: Unable to create a child process.");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+	{
+		argc = 0;
+		arguments[argc] = strtok(input, " ");
+		while (arguments[argc] != NULL)
+		{
+			argc++;
+			arguments[argc] = strtok(NULL, " ");
+		}
+		arguments[argc] = NULL;
+		if (execvp(arguments[0], arguments) == -1)
+		{
+			perror("Execution error");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		int status;
 
-            while (arguments[argc] != NULL)
-            {
-                argc++;
-                arguments[argc] = strtok(NULL, " ");
-            }
-            arguments[argc] = NULL;
-
-            if (execvp(arguments[0], arguments) == -1)
-            {
-                perror("Execution error");
-                exit(EXIT_FAILURE);
-            }
-        }
-        else
-        {
-            /* Parent process */
-            int status;
-            wait(&status);  /* Wait for child process to complete */
-        }
-    }
-
-    return 0;  /* Return 0 on success */
+		wait(&status);
+	}
 }

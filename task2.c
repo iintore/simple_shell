@@ -20,7 +20,7 @@ int main(void)
 {
 	char input[MAX_INPUT_LENGTH];
 	char *arguments[MAX_ARGUMENTS];
-	int argc;	
+	int argc;
 	while (1)
 	{
 		printf("#simple_shell$ ");
