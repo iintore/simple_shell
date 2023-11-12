@@ -21,9 +21,10 @@ int main(void)
 	char input[MAX_INPUT_LENGTH];
 	char *arguments[MAX_ARGUMENTS];
 	int argc;
+
 	while (1)
 	{
-		printf("#simple_shell$ ");
+		printf("shell$ ");
 		fgets(input, sizeof(input), stdin);
 		if (feof(stdin))
 		{
@@ -32,12 +33,14 @@ int main(void)
 		}
 		input[strcspn(input, "\n")] = '\0';
 		pid_t pid = fork();
+
 		if (pid == -1)
 		{
 			perror("fork");
-		       	exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
-		else if (pid == 0)
+		else
+			if (pid == 0)
 		{
 			/* Child process */
 			argc = 0;
@@ -56,8 +59,10 @@ int main(void)
 		{
 			/* Parent process */
 			int status;
+
 			wait(&status);
 		}
 	}
 	return (0);
 }
+

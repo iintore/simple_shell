@@ -22,7 +22,7 @@ int main(void)
 
 	while (1)
 	{
-		printf("#simple_shell$ ");
+		printf("#cisfun$ ");
 		fgets(input, sizeof(input), stdin);
 		if (feof(stdin))
 		{
