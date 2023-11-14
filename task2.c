@@ -22,6 +22,7 @@ int main(void)
 char input[MAX_INPUT_LENGTH];
 char *arguments[MAX_ARGUMENTS];
 int argc;
+pid_t pid;
 
 while (1)
 {
@@ -35,7 +36,7 @@ break; /* Exit on Ctrl+D (EOF) */
 
 input[strcspn(input, "\n")] = '\0';
 
-pid_t pid = fork();
+pid = fork();
 
 if (pid == -1)
 {

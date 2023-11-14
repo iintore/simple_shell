@@ -50,6 +50,7 @@ void executeCommand(char *input)
 	int argc = 0;
 	char *path = getenv("PATH");
 	char *command = strtok(input, " ");
+	pid_t pid;
 
 	if (access(command, X_OK) == 0)
 	{
@@ -74,7 +75,7 @@ void executeCommand(char *input)
 
 		}
 	}
-	pid_t pid = fork();
+	pid = fork();
 
 	if (pid == -1)
 	{
