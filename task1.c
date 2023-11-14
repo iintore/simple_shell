@@ -22,6 +22,8 @@ int main(void)
 
 	while (1)
 	{
+		pid_t pid;
+
 		printf("#cisfun$ ");
 		fgets(input, sizeof(input), stdin);
 		if (feof(stdin))
@@ -32,7 +34,7 @@ int main(void)
 		/* Remove the newline character from the input */
 		input[strcspn(input, "\n")] = '\0';
 
-		pid_t pid = fork();
+		pid = fork();
 
 		if (pid == -1)
 		{
