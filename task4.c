@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MAX_INPUT_LENGTH 100
+#define MAX_INPUT_LENGTH 512
 #define MAX_ARGUMENTS 20
 
 /**
@@ -18,14 +18,17 @@
  */
 int main(void)
 {
-	char input[MAX_INPUT_LENGTH];     /* Stores user input */
-	char *arguments[MAX_ARGUMENTS];   /* Stores command and arguments */
-	int argc;                         /* Argument count */
+	int status;
+	char cmd_path[MAX_INPUT_LENGTH]; /*use a larger buffer size*/
+	char input[MAX_INPUT_LENGTH];
+	char *arguments[MAX_ARGUMENTS];
+	int argc;
+	char *path = getenv("PATH");
+	pid_t pid;
 	
 	while (1)
 	{
-		printf(":) ");    /* Display shell prompt */
-        /* Read user input */
+		printf(":) ");
 		fgets(input, sizeof(input), stdin);
 		
 		if (feof(stdin))
@@ -41,30 +44,33 @@ int main(void)
 			printf("Murabeho!\n");  /* Display a farewell message */
 			break;  /* Exit the shell gracefully */
 		}
-		char *path = getenv("PATH");
-		char *command = strtok(input, " ");
-		
-		if (access(command, X_OK) == 0)
+
+		if (access(input, X_OK) == 0)
 		{
-			strcpy(input, command);
+			/* If the command is executable within the current directory */
 		}
 		else if (path != NULL)
-		{
-			char *path_token = strtok(path, ":");
-			
-			while (path_token != NULL)
-			{
-				char cmd_path[MAX_INPUT_LENGTH];
-				snprintf(cmd_path, sizeof(cmd_path), "%s/%s", path_token, command);
-				if (access(cmd_path, X_OK) == 0)
-				{
-					strcpy(input, cmd_path);
-					break;
-				}
-				path_token = strtok(NULL, ":");
-			}
-		}
-		pid_t pid = fork();  /* Create a child process */
+{
+    char *path_token = strtok(path, ":");
+
+    while (path_token != NULL)
+    {
+        strncpy(cmd_path, path_token, sizeof(cmd_path) - 1);
+        cmd_path[sizeof(cmd_path) - 1] = '\0';  /* Null-terminate the string */
+        strncat(cmd_path, "/", sizeof(cmd_path) - strlen(cmd_path) - 1);
+        strncat(cmd_path, input, sizeof(cmd_path) - strlen(cmd_path) - 1);
+
+        if (access(cmd_path, X_OK) == 0)
+        {
+            strcpy(input, cmd_path);
+            break;
+        }
+        path_token = strtok(NULL, ":");
+    }
+}
+
+
+		pid = fork();  /* Create a child process */
 		
 		if (pid == -1)
 		{
@@ -91,8 +97,7 @@ int main(void)
 		else
 		{
 			/* Parent process */
-			int status;
-			wait(&status);  /* Wait for child process to complete */
+			waitpid(pid, &status, 0);  /* Wait for child process to complete */
 		}
 	}
 	return (0);  /* Return 0 on success */
