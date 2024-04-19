@@ -1,5 +1,5 @@
-#ifndef _CUSTOM-SHELL_H_
-#define _CUSTOM-SHELL_H_
+#ifndef _CUSTOMSHELL_H_
+#define _CUSTOMSHELL_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -158,11 +158,11 @@ void ffree(char **);
 void *_realloc(void *, unsigned int, unsigned int);
 
 /* toem_memory.c */
-int bfree(void **);
+int make_memory_free(void **);
 
 /* toem_atoi.c */
-int interactive(info_t *);
-int is_delim(char, char *);
+int interact(info_t *);
+int is_delimiter(char, char *);
 int _isalpha(int);
 int _atoi(char *);
 
